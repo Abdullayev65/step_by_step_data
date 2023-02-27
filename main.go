@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"github.com/Abdullayev65/step_by_step_data/pkg/app"
 )
 
 func main() {
-	fmt.Println("hello")
+	a := app.New()
+	a.Run()
 }

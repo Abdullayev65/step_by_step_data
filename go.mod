@@ -1,4 +1,4 @@
-module github.com/Abdullayev65/gin_bun_project
+module github.com/Abdullayev65/step_by_step_data
 
 go 1.19
 
