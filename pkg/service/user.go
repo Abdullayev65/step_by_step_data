@@ -21,7 +21,7 @@ func (s *Service) UserAdd(user *models.User) error {
 }
 
 func (s *Service) IsAdmin(userID int) bool {
-	//todo
-
-	return true
+	user := &models.User{ID: userID}
+	s.DB.NewSelect().Model(user).Column("admin").WherePK().Scan(s.ctx)
+	return user.Admin
 }

@@ -17,3 +17,12 @@ type Article struct {
 	Step          int8   `bun:",nullzero,notnull" json:"step"`
 	Active        bool   `bun:",notnull" json:"active"`
 }
+type Comment struct {
+	bun.BaseModel `bun:"table:comment"`
+	ID            int    `bun:",pk,autoincrement" json:"id"`
+	Comment       string `bun:",nullzero,notnull,type:text" json:"comment"`
+	ArticleID     int    `bun:",nullzero,notnull,unique:article_id_step_comment" json:"articleID"`
+	AdminID       int    `bun:",nullzero,notnull" json:"adminID"`
+	Step          int8   `bun:",nullzero,notnull,unique:article_id_step_comment" json:"step"`
+	Accepted      bool   `bun:",notnull" json:"accepted"`
+}

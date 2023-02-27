@@ -7,3 +7,7 @@ type Sign struct {
 type ArticleInput struct {
 	Data string `json:"data"`
 }
+
+type CommentInput struct {
+	Comment string `json:"comment"`
+}

@@ -26,8 +26,8 @@ func (a *App) initRouters() *gin.Engine {
 		admin.GET("/all-articles", a.handler.AllArticles)
 		admin.POST("/article/accept",
 			a.MW.SetIntFromQuery("articleID", "step"), a.handler.ArticleAccept)
-		admin.POST("/article/reject/:articleID",
-			a.MW.SetIntFromParam("articleID"), a.handler.ArticleReject)
+		admin.POST("/article/reject",
+			a.MW.SetIntFromQuery("articleID", "step"), a.handler.ArticleReject)
 	}
 	return router
 }

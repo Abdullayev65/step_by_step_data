@@ -22,9 +22,10 @@ func (a *App) database() (*bun.DB, context.Context) {
 
 	ctx := context.Background()
 
-	ms := []interface{}{(*models.User)(nil),
+	ms := []interface{}{
 		(*models.User)(nil),
 		(*models.Article)(nil),
+		(*models.Comment)(nil),
 	}
 	if resetModel {
 		db.ResetModel(ctx, ms...)

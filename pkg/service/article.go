@@ -32,7 +32,7 @@ func (s *Service) ArticlesByUserID(userID int) *[]models.Article {
 func (s *Service) ArticlesByStep(step int) *[]models.Article {
 	articles := make([]models.Article, 0)
 	s.DB.NewSelect().Model(&articles).
-		Where("step = ?", step).Scan(s.ctx)
+		Where("step = ? AND active = true", step).Scan(s.ctx)
 	return &articles
 }
 
@@ -42,7 +42,7 @@ func (s *Service) AllArticles() *[]models.Article {
 	return &articles
 }
 
-func (s *Service) ArticleAccept(id int, step int) error {
+func (s *Service) ArticleAccept(id int, step int, comment *models.Comment) error {
 	article := models.Article{ID: id}
 	err := s.DB.NewSelect().Model(&article).Column("step").
 		WherePK().Scan(s.ctx)
@@ -52,7 +52,14 @@ func (s *Service) ArticleAccept(id int, step int) error {
 	if step < int(article.Step) {
 		return errors.New("user bu bosqichdan o'tkan")
 	}
+	if step != int(article.Step) {
+		return errors.New("user oldingi bosqichdan o'tishi kerak")
+	}
 	article.Step++
+	_, err = s.DB.NewInsert().Model(comment).Exec(s.ctx)
+	if err != nil {
+		return err
+	}
 	_, err = s.DB.NewUpdate().Model(&article).Column("step").
 		WherePK().Exec(s.ctx)
 	if err != nil {
@@ -61,11 +68,25 @@ func (s *Service) ArticleAccept(id int, step int) error {
 	return nil
 }
 
-func (s *Service) ArticleReject(id int) error {
-	article := models.Article{ID: id, Active: false}
-	_, err := s.DB.NewUpdate().Model(&article).
-		Set("active = ?", false).WherePK().Exec(s.ctx)
-
+func (s *Service) ArticleReject(id int, step int, comment *models.Comment) error {
+	article := models.Article{ID: id}
+	err := s.DB.NewSelect().Model(&article).Column("step").
+		WherePK().Scan(s.ctx)
+	if err != nil {
+		return err
+	}
+	if step < int(article.Step) {
+		return errors.New("user bu bosqichdan o'tkan")
+	}
+	if step != int(article.Step) {
+		return errors.New("user bu bosqichga yetib kelmagan")
+	}
+	_, err = s.DB.NewInsert().Model(comment).Exec(s.ctx)
+	if err != nil {
+		return err
+	}
+	_, err = s.DB.NewUpdate().Model(&article).Set("active = ?", false).
+		WherePK().Exec(s.ctx)
 	if err != nil {
 		return err
 	}
